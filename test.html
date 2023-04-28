@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Produktliste</title>
+</head>
+<body>
+	<table>
+		<thead>
+			<tr>
+				<th>Produktname</th>
+				<th>Beschreibung</th>
+				<th>Preis</th>
+				<th>Menge</th>
+			</tr>
+		</thead>
+		<tbody id="product-list">
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="3"><strong>Gesamtpreis:</strong></td>
+				<td id="total-price"></td>
+			</tr>
+		</tfoot>
+	</table>
+	
+	<script>
+		fetch("https://dummyapi.io/data/api/products", {
+		    headers: {
+		        "app-id": "YOUR_APP_ID" // Ersetze YOUR_APP_ID durch deine tatsächliche App-ID
+		    }
+		})
+		.then(response => response.json())
+		.then(data => {
+		    let totalPrice = 0;
+		    const productList = document.getElementById("product-list");
+		    data.data.forEach(product => {
+		        const row = productList.insertRow();
+		        const nameCell = row.insertCell(0);
+		        const descCell = row.insertCell(1);
+		        const priceCell = row.insertCell(2);
+		        const quantityCell = row.insertCell(3);
+		        const addButton = document.createElement("button");
+		        const removeButton = document.createElement("button");
+		        let quantity = 0;
+		        nameCell.innerHTML = product.name;
+		        descCell.innerHTML = product.description;
+		        priceCell.innerHTML = product.price;
+		        addButton.innerHTML = "+";
+		        addButton.addEventListener("click", () => {
+		            quantity++;
+		            quantityCell.innerHTML = quantity;
+		            totalPrice += product.price;
+		            document.getElementById("total-price").innerHTML = totalPrice;
+		        });
+		        removeButton.innerHTML = "-";
+		        removeButton.addEventListener("click", () => {
+		            if (quantity > 0) {
+		                quantity--;
+		                quantityCell.innerHTML = quantity;
+		                totalPrice -= product.price;
+		                document.getElementById("total-price").innerHTML = totalPrice;
+		            }
+		        });
+		        quantityCell.appendChild(removeButton);
+		        quantityCell.appendChild(document.createTextNode(" " + quantity + " "));
+		        quantityCell.appendChild(addButton);
+		    });
+		    document.getElementById("total-price").innerHTML = totalPrice;
+		})
+		.catch(error => {
+		    console.error("Fehler beim Abrufen der Produktliste: " + error);
+		});
+	</script>
+</body>
+</html>
